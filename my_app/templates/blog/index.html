@@ -1,0 +1,60 @@
+{% extends "blog/master.html" %}
+{% from "macro/pagination.html" import m_pagination %}
+
+{% block content %}
+<h1>Post List</h1>
+
+<form>
+    <div class="row">
+        <div class="col">
+            <div class="mt-2">
+                {{filterBlog.search.label(class='form-label')}}
+                {{filterBlog.search}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="mt-2">
+                {{filterBlog.category.label(class='form-label')}}
+                {{filterBlog.category}}
+            </div>
+        </div>
+        <div class="col">
+            <div class="mt-2">
+                {{filterBlog.tag.label(class='form-label')}}
+                {{filterBlog.tag}}
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success mt-2">Send</button>
+    <a class="btn btn-link" href="{{ url_for('posts.index') }}">Clean Filters</a>
+</form>
+
+<hr>
+
+<!-- list -->
+
+{% for p in posts %}
+<div class="card mt-2">
+    <div class="card-header">
+        {{p.name}}
+    </div>
+    <div class="card-body">
+        {{p.description}}
+        <br>
+        <a href="{{ url_for('posts.index',category=p.category_id) }}" class="btn btn-secondary btn btn-sm"> {{p.category.name}}</a>
+        <hr>
+        {% for t in p.tags %}
+            <a href="{{ url_for('posts.index',tag=t.id) }}">{{ t.name }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+
+<div class="mt-4">
+    {{ m_pagination(posts) }}
+</div>
+
+{% endblock %}

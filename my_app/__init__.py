@@ -2,10 +2,11 @@ from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_seeder import FlaskSeeder
 
 from my_app.config import DevConfig
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='assets')
 
 #configurations
 app.config.from_object(DevConfig)
@@ -13,6 +14,10 @@ app.config.from_object(DevConfig)
 #db
 db=SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+#seeder
+seeder = FlaskSeeder()
+seeder.init_app(app,db)
 
 @app.route('/')
 def hello_world(): # -> str
