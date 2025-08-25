@@ -120,5 +120,4 @@ _Todos los capítulos están basados en una progresión práctica y realista par
 
 ---
 
-> Nota: Intenté extraer directamente el contenido desde GitHub y desde la página original, pero solo pude acceder con éxito al contenido completo y útil desde Leanpub, como se refleja en el índice anterior. Si tienes acceso directo al blog y necesitas añadir más detalles o características específicas, puedo ayudarte encantado.
-::contentReference[oaicite:9]{index=9}
+
