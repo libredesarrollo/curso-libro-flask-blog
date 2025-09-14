@@ -4,12 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_seeder import FlaskSeeder
 
-from my_app.config import DevConfig
+from my_app.config import DevConfig, ProdConfig
 
 app = Flask(__name__, static_folder='assets')
 
 #configurations
-app.config.from_object(DevConfig)
+
+# app.config.from_object(DevConfig)
+app.config.from_object(ProdConfig)
 
 #db
 db=SQLAlchemy(app)
