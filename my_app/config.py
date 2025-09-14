@@ -1,16 +1,20 @@
+import os
 
 class Config(object):
-    pass
+    # Load secret key from environment variable. Provide a default for development.
+    SECRET_KEY = os.getenv('SECRET_KEY', 'a-default-dev-secret-key')
 
 class ProdConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI="mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway" 
+    # Load the production database URI from an environment variable
+    # SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway"  )
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway"
 
 class DevConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI="mysql+pymysql://sail:password@localhost:3306/testing" 
+    SQLALCHEMY_DATABASE_URI="mysql+pymysql://root:@localhost:3306/flaskblog" 
+    # SQLALCHEMY_DATABASE_URI="mysql+pymysql://sail:password@localhost:3306/testing" 
     
-    SECRET_KEY='SECRET_KEY'
 
 class TestingConfig(DevConfig):
     WTF_CSRF_ENABLED=False
