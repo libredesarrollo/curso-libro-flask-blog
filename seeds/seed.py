@@ -14,7 +14,7 @@ class CategorySeeder(Seeder):
             }
         )
 
-        for category in faker.create(0):
+        for category in faker.create(5):
             print("Adding category %s" % category)
             self.db.session.add(category)
 
@@ -28,7 +28,7 @@ class TagSeeder(Seeder):
             }
         )
 
-        for tag in faker.create(0):
+        for tag in faker.create(5):
             print("Adding tag %s" % tag)
             self.db.session.add(tag)
 
