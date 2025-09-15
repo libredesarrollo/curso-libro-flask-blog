@@ -4,9 +4,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_seeder import FlaskSeeder
 
+from dotenv import load_dotenv
+
+# Cargar variables del .env
+load_dotenv()
+
 from my_app.config import DevConfig, ProdConfig
 
 app = Flask(__name__, static_folder='assets')
+
+
+
+
 
 #configurations
 
@@ -24,6 +33,7 @@ seeder.init_app(app,db)
 @app.route('/')
 def hello_world(): # -> str
     return 'Hello Flask'
+
 
 
 #blueprints

@@ -6,6 +6,10 @@ https://www.desarrollolibre.net/blog/flask/curso-flask
 
 https://www.desarrollolibre.net/libros/primeros-pasos-flask
 
+Demo de la app de blog:
+
+https://curso-libro-flask-blog-production.up.railway.app/
+
 ---
 
 ## Índice de Contenidos

@@ -5,11 +5,11 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY', 'a-default-dev-secret-key')
 
 class ProdConfig(Config):
-    DEBUG = True
+    DEBUG = False
     # Load the production database URI from an environment variable
-    # SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway"  )
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway"  )
     # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@mysql.railway.internal:3306/railway"
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@shuttle.proxy.rlwy.net:17040/railway"
+    # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:twgYYhRdwyuEzAjuxuGYXeVvTdHulUUe@shuttle.proxy.rlwy.net:17040/railway"
     
 
 class DevConfig(Config):
