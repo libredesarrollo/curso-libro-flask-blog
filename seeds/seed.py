@@ -48,7 +48,7 @@ class PostSeeder(Seeder):
         )
 
         for post in faker.create(20):
-            print("Adding tag %s" % post)
+            print("Adding post %s" % post)
             self.db.session.add(post)
             self.db.session.commit()
             self.db.session.refresh(post)

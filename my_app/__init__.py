@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -19,7 +19,12 @@ app = Flask(__name__, static_folder='assets')
 
 #configurations
 
-# app.config.from_object(DevConfig)
+if app.config['DEBUG']:
+    app.config.from_object(DevConfig)
+else:
+    app.config.from_object(ProdConfig)
+
+app.config.from_object(DevConfig)
 app.config.from_object(ProdConfig)
 
 #db
@@ -31,8 +36,9 @@ seeder = FlaskSeeder()
 seeder.init_app(app,db)
 
 @app.route('/')
-def hello_world(): # -> str
-    return 'Hello Flask'
+def hello_world(): # -> str    
+    # return 'Hello Flask'
+    return redirect(url_for('posts.index'))
 
 
 
