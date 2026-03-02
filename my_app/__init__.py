@@ -46,6 +46,9 @@ def hello_world(): # -> str
 from my_app.blog.controllers import blogRoute
 app.register_blueprint(blogRoute)
 
+from my_app.celery_views import celery_bp
+app.register_blueprint(celery_bp)
+
 # def create_app():
 #     app = Flask(__name__)
 
