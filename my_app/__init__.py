@@ -43,7 +43,7 @@ def hello_world(): # -> str
 
 
 #blueprints
-from my_app.blog.controllers import blogRoute
+from my_app.blog import blogRoute
 app.register_blueprint(blogRoute)
 
 from my_app.celery_views import celery_bp

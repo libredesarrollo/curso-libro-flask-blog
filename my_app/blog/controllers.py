@@ -1,35 +1,43 @@
+"""
+Blog Controllers (Blueprint)
+=============================
+Este módulo sólo se encarga de la capa HTTP:
+  - Recibir la request
+  - Delegar la lógica al servicio correspondiente
+  - Renderizar la plantilla con los datos
+
+Ninguna consulta a la BD ni regla de negocio vive aquí.
+"""
+
 from flask import Blueprint, render_template, request
 
-from my_app import db
-# from .models import Post, Category, Tag
-from . import models, forms # from my_app.blog import models
+from . import forms
+from .services import post_service, category_service, tag_service
 
 
-blogRoute = Blueprint('posts',__name__,url_prefix='/blog',)
+blogRoute = Blueprint('posts', __name__, url_prefix='/blog')
+
 
 @blogRoute.route('/')
 def index():
+    """Lista paginada de posts con filtros opcionales."""
 
-    filterBlog = forms.FilterBlog(request.args)
+    filter_form = forms.FilterBlog(request.args)
 
-    filterBlog.category.choices = [("","")] + [ (c.id, c.name) for c in models.Category.query.all() ]
+    # Poblar choices desde los servicios (sin tocar la BD directamente aquí)
+    filter_form.category.choices = [("", "")] + [
+        (c.id, c.name) for c in category_service.get_all()
+    ]
+    filter_form.tag.choices = [
+        (t.id, t.name) for t in tag_service.get_all()
+    ]
 
-    filterBlog.tag.choices = [ (t.id, t.name) for t in models.Tag.query.all() ]
-    
-    posts = db.session.query(models.Post)
+    # Delegar la lógica de filtrado y paginación al servicio
+    posts = post_service.get_filtered_posts(
+        search=filter_form.search.data,
+        category_id=filter_form.category.data,
+        tag_ids=filter_form.tag.data,
+        page=request.args.get('page', 1, type=int),
+    )
 
-    if filterBlog.search.data and filterBlog.search.data.strip():
-        posts = posts.filter(models.Post.name.like('%'+filterBlog.search.data.strip()+'%'))
-
-    if filterBlog.category.data:
-         posts = posts.filter(models.Post.category_id==filterBlog.category.data)
-
-    if filterBlog.tag.data:
-        # posts = posts.join(models.post_tag).filter(models.post_tag.columns.tag_id == filterBlog.tag.data)
-        posts = posts.join(models.post_tag).filter(models.post_tag.columns.tag_id.in_(filterBlog.tag.data))
-        # posts = posts.join(models.post_tag).join(models.Tag).filter(models.Tag.id.in_(filterBlog.tag.data))
-
-    # posts = posts.all()
-    posts = posts.paginate(page=request.args.get('page', 1, type=int))
-
-    return render_template('blog/index.html', filterBlog=filterBlog, posts=posts)
+    return render_template('blog/index.html', filterBlog=filter_form, posts=posts)
