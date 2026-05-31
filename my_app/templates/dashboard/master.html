@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %} - Flask</title>
+    <!-- <link rel="stylesheet" href="/assets/style.css"> -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">{{ _('Dashboard') }}</a>
+
+            <button class="navbar-toggler" type="button" data-bs-target="#navbarApp" data-bs-toggle="collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse" id="navbarApp">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a  class="nav-link" href="{{ url_for('tasks.index') }}">{{ _('Tasks') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a target="_blank" class="nav-link" href="/api/task">Api {{ _('Tasks') }}</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown dropstart">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+
+                            {% if session['user']['avatar_id']: %}
+                               <img class="border border-info rounded-circle nav-avatar" src="{{ url_for('static', filename='uploads/avatar/'+session['user']['avatar']) }}">
+                            {% else %}
+                                <img class="border border-info rounded-circle nav-avatar" src="https://randomuser.me/api/portraits/women/9.jpg" />
+                            {% endif %}
+
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#">                  
+                                    {{ _('Hi') }} {{ session['user'].username }}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.profile') }}">{{ _('Profile') }}</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    
+
+
+    
+
+
+    <!-- flash 
+    {# with messages = get_flashed_messages(with_categories=true, category_filter=['info']) #}
+    -->
+
+   
+
+
+    <!-- body -->
+    <div class="container">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info fade show mt-3">
+                    {{message}}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card mt-3">
+            <div class="card-body">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        <p>{{ _('Dashboard') }} {{ _('Tasks') }}</p>
+    {% endblock %}
+    
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+</body>
+
+</html>

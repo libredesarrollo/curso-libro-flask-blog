@@ -1,0 +1,59 @@
+<div class="row">
+
+    <div class="col">
+        {% set errorForm = '' %}
+        {% if form.name.errors %}
+        {% set errorForm = 'is-invalid' %}
+        {% for error in form.name.errors %}
+        <p class="text-danger">
+            Name - {{ error }}
+        </p>
+        {% endfor %}
+        {% endif %}
+
+        <div class="mb-3">
+            {{ form.name.label(class='form-label') }}
+            {{ form.name(class='form-control '+errorForm) }}
+        </div>
+    </div>
+
+
+    <div class="col">
+        {% if form.category.errors %}
+        {% set errorForm = 'is-invalid' %}
+        {% for error in form.category.errors %}
+        <p class="text-danger">
+            {{ _('Category') }} - {{ error }}
+        </p>
+        {% endfor %}
+        {% endif %}
+
+        <div class="mb-3">
+            {{ form.category.label(class='form-label') }}
+            {{ form.category(class='form-select '+errorForm) }}
+        </div>
+    </div>
+</div>
+
+{% if id: %}
+    <div class="row mb-2">
+        <div class="col">
+            {{ form.file.label(class='form-label') }}
+            {{ form.file(class='form-control') }}
+        </div>
+    </div>
+{% endif %}
+
+
+<!-- {% if form.errors %}
+        <ul>
+        {% for error in form.errors %}
+            <li>
+                {{ error }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %} -->
+
+{{ form.csrf_token }}
+<button type="submit" class="btn btn-primary ">{{ _('Send') }}</button>

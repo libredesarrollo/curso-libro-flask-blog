@@ -1,0 +1,28 @@
+{% extends "master.html" %}
+
+{% block title %} Register user {% endblock%}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 400px;">
+   <div class="card">
+      <div class="card-body">
+         <form method="post">
+            {{ form.csrf_token }}
+
+            {{ form.username.label(class='form-label') }}
+            {{ form.username(class='form-control') }}
+
+            {{ form.password.label(class='form-label mt-2') }}
+            {{ form.password(class='form-control') }}
+
+            {{ form.confirm.label(class='form-label mt-2') }}
+            {{ form.confirm(class='form-control') }}
+
+            <div class="d-grid my-3">
+               <button type="submit" class="btn btn-success btn-block">Send</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock %}

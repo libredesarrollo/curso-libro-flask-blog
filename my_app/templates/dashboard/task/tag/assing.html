@@ -1,0 +1,7 @@
+<form action="{{ url_for('tasks.tagAdd', id=id) }}" method="post">
+    {{ formTag.tag.label(class='form-label') }}
+    {{ formTag.tag(class='form-control') }}
+
+    {{ formTag.csrf_token }}
+    <button type="submit" class="btn btn-success btn-sm mt-1">{{ _('Send') }}</button>
+</form>
