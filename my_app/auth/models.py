@@ -34,8 +34,9 @@ class User(db.Model):
 
     email_confirmed_at = db.Column(db.DateTime(), nullable=True)
 
-    def __init__(self, username, password):
+    def __init__(self, username, email, password):
         self.username = username
+        self.email = email
         self.pwdhash = generate_password_hash(password)
 
     def check_password(self, password):

@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template, request, session, flash
 
 from functools import wraps
 
@@ -65,14 +65,30 @@ def roles_required(*role_names):
 db=SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+# Demo Mode DB Write Restriction
+class DemoModeError(Exception):
+    pass
+
+from sqlalchemy import event
+
+@event.listens_for(db.session, 'before_flush')
+def block_database_writes(session, flush_context, instances):
+    if app.config.get('DEMO_MODE', False):
+        if session.new or session.dirty or session.deleted:
+            raise DemoModeError("Las modificaciones a la base de datos están deshabilitadas en el modo demo.")
+
+@app.errorhandler(DemoModeError)
+def handle_demo_mode_error(error):
+    flash(str(error), "danger")
+    return redirect(request.referrer or url_for('hello_world'))
+
 #seeder
 seeder = FlaskSeeder()
 seeder.init_app(app,db)
 
 @app.route('/')
 def hello_world(): # -> str    
-    # return 'Hello Flask'
-    return redirect(url_for('posts.index'))
+    return render_template('welcome.html')
 
 
 

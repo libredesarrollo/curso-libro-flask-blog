@@ -16,6 +16,7 @@ class Config(object):
     JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=24)
     # Load secret key from environment variable. Provide a default for development.
     SECRET_KEY = os.getenv('SECRET_KEY', 'a-default-dev-secret-key')
+    DEMO_MODE = os.getenv('DEMO_MODE', 'True').lower() in ['true', '1', 'yes']
 
 class ProdConfig(Config):
     DEBUG = False

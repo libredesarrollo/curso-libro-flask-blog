@@ -46,14 +46,16 @@ def register():
             flash('This username has been already taken. Try another one', 'warning')
             return render_template('user/register.html', form=form)
         
-        user = User(username=username, password=password)
+        user = User(username=username, email=username, password=password)
+        user.first_name = ''
+        user.last_name = ''
         db.session.add(user)
         db.session.commit()
 
         token = generate_confirmation_token(user.email)
         # send email
         html = render_template('user/email_confirm_user.html', token=token)
-        send_email(user.email, 'Confirm account',html)
+        # send_email(user.email, 'Confirm account',html)
 
         flash('You are now registered. Please login.', 'success')
 

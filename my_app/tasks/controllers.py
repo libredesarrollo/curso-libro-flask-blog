@@ -23,7 +23,7 @@ def before():
     pass
 
 @taskRoute.route('/')
-@roles_required('READ_TASK')
+# @roles_required('READ_TASK')
 def index():
     # token = generate_confirmation_token(session['user']['email'])
     # print(token)
@@ -32,15 +32,15 @@ def index():
     print(db.session.query(User).join(models.Task.user).all())
 
 
-    if session['user']['roles'].find('ADMIN') >= 0:
-        tasks = operations.pagination(request.args.get('page', 1, type=int))
-    else:
-        tasks = operations.pagination(request.args.get('page', 1, type=int), user_id=session['user']['id'])
+    # if session['user']['roles'].find('ADMIN') >= 0:
+    tasks = operations.pagination(request.args.get('page', 1, type=int))
+    # else:
+    #     tasks = operations.pagination(request.args.get('page', 1, type=int), user_id=session['user']['id'])
 
     return render_template('dashboard/task/index.html', tasks=tasks)
 
 @taskRoute.route('/<int:id>')
-@roles_required('READ_TASK')
+# @roles_required('READ_TASK')
 def show(id:int):
     return 'Show '+str(id)
 
@@ -54,7 +54,7 @@ def delete(id:int):
     return redirect(url_for('tasks.index'))
 
 @taskRoute.route('/create', methods=('GET','POST'))
-@roles_required('SAVE_TASK')
+# @roles_required('SAVE_TASK')
 def create():
     form = forms.Task() #csrf_enabled=False
     form.category.choices = [ (c.id, c.name) for c in models.Category.query.all()]

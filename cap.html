@@ -1,0 +1,72 @@
+<h2>Implementación de un Modo Demo en Flask</h2>
+
+<p>Para crear un entorno de pruebas seguro y de solo lectura para los usuarios, se puede diseñar un "Modo Demo" en aplicaciones desarrolladas con Flask y SQLAlchemy. Este mecanismo consta principalmente de dos partes: una interfaz de bienvenida atractiva que oriente al usuario en los módulos disponibles y un mecanismo a nivel de base de datos que bloquee cualquier operación de escritura de forma segura e integral.</p>
+
+<h3>1. Diseño de la Vista de Bienvenida</h3>
+<p>Se define un nuevo template HTML que actúa como la página de entrada del proyecto. Esta vista incluye la descripción de las limitaciones del modo de demostración y proporciona enlaces de exploración directa a las funcionalidades principales (por ejemplo, el blog, la gestión de tareas o el consumo de endpoints de la API REST). En el controlador principal de la aplicación, se sustituye la redirección inicial para renderizar esta plantilla en la ruta raíz (/).</p>
+
+<h3>2. Bloqueo de Operaciones de Escritura con Eventos de SQLAlchemy</h3>
+<p>En lugar de bloquear las peticiones de escritura una a una en cada controlador o ruta de la aplicación, resulta más robusto interceptar las modificaciones directamente en la capa de persistencia utilizando los controladores de eventos de SQLAlchemy. Mediante el evento <code>before_flush</code> asociado a la sesión de base de datos (<code>db.session</code>), la aplicación monitorea si existen entidades nuevas (<code>session.new</code>), modificadas (<code>session.dirty</code>) o programadas para eliminación (<code>session.deleted</code>) antes de ejecutar cualquier transacción en la base de datos:</p>
+
+<pre>
+from sqlalchemy import event
+
+class DemoModeError(Exception):
+    pass
+
+@event.listens_for(db.session, 'before_flush')
+def block_database_writes(session, flush_context, instances):
+    if session.new or session.dirty or session.deleted:
+        raise DemoModeError("Las modificaciones a la base de datos están deshabilitadas en el modo demo.")
+</pre>
+
+<h3>3. Control de Excepciones y Experiencia de Usuario Graceful</h3>
+<p>Cuando un usuario intenta enviar un formulario de registro o guardar un cambio en la base de datos, el evento de SQLAlchemy interrumpe la transacción y lanza la excepción personalizada <code>DemoModeError</code>. Para evitar que la aplicación retorne un error de servidor interno genérico (HTTP 500) y confunda al usuario, se registra un manejador de errores global en la instancia de Flask empleando el decorador <code>@app.errorhandler</code>. Este interceptor captura la excepción, genera un mensaje de retroalimentación amigable a través de la función <code>flash()</code> y redirige automáticamente de regreso a la página anterior o de origen:</p>
+
+<pre>
+@app.errorhandler(DemoModeError)
+def handle_demo_mode_error(error):
+    flash(str(error), "danger")
+    return redirect(request.referrer or url_for('hello_world'))
+</pre>
+
+<p>Esta aproximación centralizada garantiza que ningún módulo del proyecto, ya sea a través de formularios convencionales, peticiones asíncronas o APIs RESTful, pueda alterar la base de datos de producción mientras el modo demo permanezca activo, ofreciendo al mismo tiempo una retroalimentación clara y no obstructiva al usuario final.</p>
+
+<h3>4. Desactivación y Configuración Dinámica</h3>
+<p>Para poder activar o desactivar este comportamiento de manera flexible sin alterar el código fuente en producción, se suele integrar con las variables de entorno de la aplicación y la clase de configuración de Flask:</p>
+
+<ol>
+    <li>
+        <strong>Definir la variable en la configuración:</strong> 
+        Se añade una bandera en las clases de configuración (por ejemplo, en <code>config.py</code>) que evalúe si el modo demo debe estar habilitado, usualmente leyendo una variable de entorno:
+        <pre>
+class Config(object):
+    DEMO_MODE = os.getenv('DEMO_MODE', 'False').lower() in ['true', '1', 'yes']
+        </pre>
+    </li>
+    <li>
+        <strong>Condicionar el hook de base de datos:</strong> 
+        Se modifica el listener del evento para que solo ejecute la restricción si la bandera de configuración está activa:
+        <pre>
+@event.listens_for(db.session, 'before_flush')
+def block_database_writes(session, flush_context, instances):
+    if app.config.get('DEMO_MODE', False):
+        if session.new or session.dirty or session.deleted:
+            raise DemoModeError("Las modificaciones a la base de datos están deshabilitadas en el modo demo.")
+        </pre>
+    </li>
+    <li>
+        <strong>Condicionar la ruta de bienvenida:</strong> 
+        De igual forma, la redirección a la página de bienvenida se puede condicionar para redirigir directamente al catálogo o index principal si el modo demo no está activo:
+        <pre>
+@app.route('/')
+def hello_world():
+    if not app.config.get('DEMO_MODE', False):
+        return redirect(url_for('posts.index'))
+    return render_template('welcome.html')
+        </pre>
+    </li>
+</ol>
+
+<p>De esta manera, para desactivar el modo demo, basta con cambiar el valor de la variable de entorno <code>DEMO_MODE</code> a <code>False</code> (o removerla) y reiniciar la aplicación, devolviéndole instantáneamente el acceso de escritura completo y saltando la pantalla de bienvenida.</p>
+
