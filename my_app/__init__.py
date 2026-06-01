@@ -4,8 +4,8 @@ from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_seeder import FlaskSeeder
-
+# from flask_seeder import FlaskSeeder # DEPRECATED!!
+from flask_caching import Cache
 from flask_login import LoginManager
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -19,6 +19,9 @@ load_dotenv()
 from my_app.config import DevConfig, ProdConfig
 
 app = Flask(__name__, static_folder='assets')
+
+#************ flask caching
+cache = Cache(app)
 
 #configurations
 
@@ -83,8 +86,8 @@ def handle_demo_mode_error(error):
     return redirect(request.referrer or url_for('hello_world'))
 
 #seeder
-seeder = FlaskSeeder()
-seeder.init_app(app,db)
+# seeder = FlaskSeeder()
+# seeder.init_app(app,db)
 
 @app.route('/')
 def hello_world(): # -> str    
@@ -126,6 +129,20 @@ from my_app.tasks.models import Task
 from my_app.auth.models import User
 from sqlalchemy.sql.expression import or_
 #route
+
+# *** invoice
+from my_app.invoice.productController import invoiceProductBp
+from my_app.product.product import product
+from my_app.product.category import category
+from my_app.product.userController import userBp
+#general
+# import my_app.general.error_handle
+#importar las vistas
+app.register_blueprint(product)
+app.register_blueprint(category)
+app.register_blueprint(userBp)
+app.register_blueprint(invoiceProductBp)
+
 
 from my_app.util.template_filter import text_to_upper
 app.add_template_filter(text_to_upper)

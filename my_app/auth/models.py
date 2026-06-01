@@ -9,6 +9,10 @@ class LangChoices(enum.Enum):
     ES = 'ES'
     EN = 'EN'
 
+class RolUser(enum.Enum):
+    regular='regular'
+    admin='admin'
+
 class User(db.Model):
     __tablename__ = 'users'
 
