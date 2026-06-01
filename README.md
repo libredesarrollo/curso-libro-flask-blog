@@ -123,5 +123,6 @@ _Todos los capítulos están basados en una progresión práctica y realista par
 ¡Disfruta aprendiendo Flask paso a paso!
 
 ---
-
+Ejecutar en local
+PORT=8080 gunicorn -b 0.0.0.0:8080 run:app
 
